@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Join Trivia Royale</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #ef233c;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+            .register-card h2 {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .register-card input {
+                width: 100%;
+                padding: 1rem;
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+                border: none;
+                border-radius: var(--border-radius);
+                background: rgba(255, 255, 255, 0.9);
+                transition: var(--transition);
+            }
+
+                .register-card input:focus {
+                    outline: none;
+                    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+                    background: white;
+                }
+
+            .register-card button {
+                width: 100%;
+                padding: 1rem;
+                background-color: var(--accent);
+                color: white;
+                font-weight: 600;
+                font-size: 1rem;
+                border: none;
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                transition: var(--transition);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+                .register-card button:hover {
+                    background-color: #d81159;
+                    transform: translateY(-2px);
+                }
+
+                .register-card button:active {
+                    transform: translateY(0);
+                }
+
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 2rem 1.5rem;
+            }
+
+                .register-card h2 {
+                    font-size: 1.5rem;
+                }
+        }
+    </style>
+</head>
+<body>
+    <form class="register-card" method="POST" action="{{ url_for('register') }}">
+        <h2>
+            <span>🧠</span>
+            <span>Join Trivia Royale</span>
+        </h2>
+        <input type="text" name="name" id="name" placeholder="Enter your name" required autofocus>
+        <button type="submit">
+            <span>Start Playing</span>
+            <span>🚀</span>
+        </button>
+    </form>
+</body>
+</html>

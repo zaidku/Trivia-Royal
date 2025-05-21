@@ -1,0 +1,913 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trivia Royale</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <style>
+        :root {
+            --primary: #1abc9c;
+            --secondary: #2c3e50;
+            --accent: #f39c12;
+            --chat-bg: #ecf0f1;
+            --chat-text: #2d3436;
+            --error: #e74c3c;
+            --success: #2ecc71;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: #fff;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Game Area */
+        .game {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .game h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .game h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feedback {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            font-weight: bold;
+            color: yellow;
+        }
+
+        .game-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+            .game-form input[type="text"] {
+                padding: 1rem;
+                font-size: 1.1rem;
+                border-radius: 10px;
+                border: none;
+                margin-bottom: 1rem;
+            }
+
+            .game-form button {
+                padding: 1rem;
+                background: var(--accent);
+                color: #fff;
+                border: none;
+                font-size: 1.1rem;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+                .game-form button:hover {
+                    background: #d68910;
+                }
+
+        /* Chat Area */
+        .chat {
+            background: var(--chat-bg);
+            color: var(--chat-text);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            border-left: 2px solid #bdc3c7;
+            position: relative;
+        }
+
+        .chat-header {
+            margin: 0 0 1rem 0;
+            font-size: 1.3rem;
+            color: var(--chat-text);
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #ccc;
+            max-height: 60vh;
+        }
+
+        .message {
+            margin: 0.6rem 0;
+            font-size: 0.95rem;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+            .message:hover .message-actions {
+                display: inline-block;
+            }
+
+        .message-actions {
+            display: none;
+            margin-left: 5px;
+        }
+
+        .timestamp {
+            color: #999;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+
+        .sender {
+            font-weight: bold;
+            cursor: pointer;
+            color: #2980b9;
+            transition: color 0.2s;
+        }
+
+            .sender:hover {
+                color: #1a5276;
+            }
+
+        .typing-indicator {
+            color: #7f8c8d;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .message-status {
+            color: #95a5a6;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+            .message-status.read {
+                color: #3498db;
+            }
+
+        .reaction {
+            font-size: 0.8rem;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        .chat-input {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+            .chat-input select,
+            .chat-input input,
+            .chat-input button {
+                padding: 0.8rem;
+                font-size: 1rem;
+                border-radius: 8px;
+                border: 1px solid #ccc;
+            }
+
+            .chat-input button {
+                background-color: var(--primary);
+                color: white;
+                border: none;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .chat-input button:hover {
+                    background-color: #16a085;
+                }
+
+        .chat-input-wrapper {
+            position: relative;
+        }
+
+        /* Emoji Picker */
+        #emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            right: 10px;
+            z-index: 100;
+            width: 250px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* DM Window */
+        #dm-window {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .dm-header {
+            background: var(--primary);
+            color: white;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dm-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        #dm-messages {
+            height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .dm-input-area {
+            padding: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+            .dm-input-area input {
+                flex: 1;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .dm-input-area button {
+                padding: 8px 15px;
+                background: var(--primary);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+        /* Voice Chat */
+        #voice-chat {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .voice-header {
+            margin: 0 0 10px 0;
+            color: var(--chat-text);
+        }
+
+        .call-btn {
+            padding: 8px 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .end-call-btn {
+            padding: 8px 15px;
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Radio Widget */
+        #radio-widget {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: white;
+            font-family: sans-serif;
+            width: 250px;
+        }
+
+            #radio-widget audio {
+                width: 100%;
+                margin-top: 8px;
+            }
+
+        /* File Upload */
+        #file-input {
+            display: none;
+        }
+
+        .file-btn {
+            padding: 0.8rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Admin Panel */
+        #admin-panel {
+            background: rgba(0,0,0,0.6);
+            padding: 1rem;
+            color: white;
+            font-size: 0.9rem;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 9999;
+        }
+
+        #user-list {
+            list-style: none;
+        }
+
+            #user-list li {
+                margin-bottom: 10px;
+                word-break: break-all;
+            }
+
+            #user-list button {
+                margin-left: 5px;
+                padding: 3px 6px;
+                background: var(--accent);
+                color: white;
+                border: none;
+                border-radius: 3px;
+                cursor: pointer;
+            }
+
+        .online-status {
+            color: lime;
+        }
+
+        /* Reaction Menu */
+        .reaction-menu {
+            position: absolute;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+            .reaction-menu span {
+                cursor: pointer;
+                margin: 0 3px;
+                font-size: 1.2rem;
+            }
+
+        /* Responsive */
+        @media(max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+            }
+
+            .game {
+                margin: 1rem;
+                padding: 2rem;
+            }
+
+            .chat {
+                height: 40vh;
+                border-left: none;
+                border-top: 2px solid #ccc;
+            }
+
+            #dm-window, #voice-chat {
+                width: 90%;
+                left: 5%;
+                right: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if session['is_admin'] %}
+    <div id="admin-panel">
+        <h3>Admin Panel</h3>
+        <ul id="user-list"></ul>
+    </div>
+    {% endif %}
+
+    <div class="game">
+        <!-- 👑 Leaderboard & Timer -->
+        <div style="margin-bottom: 1rem;">
+            <h3 style="text-align:center;">🏆 Scoreboard</h3>
+            <ul style="list-style:none; padding:0; text-align:center;">
+                {% for user, score in leaderboard %}
+                <li style="margin: 0.2rem 0; font-weight: {{ 'bold' if user == leader else 'normal' }}; color: {{ 'gold' if user == leader else 'white' }}">
+                    {% if user == leader %}👑{% endif %} {{ user }} — {{ score }}
+                </li>
+                {% endfor %}
+            </ul>
+            <div id="countdown" style="text-align:center; margin-top: 0.5rem; font-size: 1.2rem;">⏳ Time Left: <span id="time">10</span>s</div>
+        </div>
+
+        <!-- 💡 Game Header -->
+        <div class="game-header">
+            <h1>
+                {% if is_king %}
+                <span style="color:gold;">👑 {{ name }}</span>
+                <button onclick="kickUserByName('{{ user }}')">💥 Kick</button>
+                {% else %}
+                Yo {{ name }} 🧠
+                {% endif %}
+            </h1>
+            <h2>Score: {{ score }}</h2>
+        </div>
+
+        {% if result %}
+        <div class="feedback">
+            {{ result }}
+        </div>
+        {% endif %}
+
+        <!-- 🧠 Trivia Form -->
+        <form class="game-form" method="POST" action="{{ url_for('submit_answer') }}">
+            <p><strong>{{ question }}</strong></p>
+            <input type="text" name="answer" placeholder="Type your answer..." required />
+            <button type="submit">Submit!</button>
+        </form>
+    </div>
+
+
+    <div id="radio-widget">
+        🎶 <strong>Now Playing:</strong>
+        <audio controls autoplay loop>
+            <source src="https://stream-ssl.radio-tunes.com/lounge" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <div class="chat">
+        <h3 class="chat-header">Live Chat 💬</h3>
+        <div id="chat-box"></div>
+
+        <div class="chat-input-wrapper">
+            <emoji-picker id="emoji-picker"></emoji-picker>
+
+            <div class="chat-input">
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="button" onclick="toggleEmoji()">😄</button>
+                    <button class="file-btn" onclick="document.getElementById('file-input').click()">📎</button>
+                    <input type="file" id="file-input">
+                    <select id="chat-to">
+                        <option value="All">All (Public)</option>
+                    </select>
+                </div>
+                <input type="text" id="chat-input" placeholder="Say something..." onkeydown="if(event.key==='Enter')sendMessage()" />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DM Window -->
+    <div id="dm-window">
+        <div class="dm-header">
+            <span id="dm-recipient">Chat with User</span>
+            <button class="dm-close" onclick="closeDmWindow()">✕</button>
+        </div>
+        <div id="dm-messages"></div>
+        <div class="dm-input-area">
+            <input type="text" id="dm-input" placeholder="Type a message...">
+            <button onclick="sendDmMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- Voice Chat -->
+    <div id="voice-chat">
+        <h4 class="voice-header">Voice Chat with <span id="voice-partner"></span></h4>
+        <button id="call-btn" class="call-btn" onclick="startCall()">Call</button>
+        <button id="end-call-btn" class="end-call-btn" onclick="endCall()">End Call</button>
+        <audio id="remote-audio" autoplay></audio>
+    </div>
+
+    <script>
+    const myName = {{ name|tojson }};
+    let currentDmRecipient = null;
+    let currentCallPartner = null;
+    let peerConnection = null;
+
+    // Initialize the app
+    document.addEventListener("DOMContentLoaded", () => {
+        initEmojiPicker();
+        refreshChat();
+        setInterval(refreshChat, 2500);
+        setInterval(refreshAdminPanel, 5000);
+    });
+
+    // Emoji Picker Functions
+    function initEmojiPicker() {
+        const picker = document.getElementById("emoji-picker");
+        const chatInput = document.getElementById("chat-input");
+
+        picker.style.display = "none";
+
+        customElements.whenDefined("emoji-picker").then(() => {
+            picker.addEventListener("emoji-click", (event) => {
+                chatInput.value += event.detail.unicode;
+                chatInput.focus();
+                picker.style.display = "none";
+            });
+        });
+
+        document.addEventListener("click", (event) => {
+            if (!picker.contains(event.target) && !event.target.closest('button[onclick="toggleEmoji()"]')) {
+                picker.style.display = "none";
+            }
+        });
+    }
+
+    function toggleEmoji() {
+        const picker = document.getElementById("emoji-picker");
+        const button = document.querySelector('button[onclick="toggleEmoji()"]');
+        const buttonRect = button.getBoundingClientRect();
+
+        picker.style.display = picker.style.display === "none" ? "block" : "none";
+        picker.classList.remove("upward", "downward");
+
+        const spaceBelow = window.innerHeight - buttonRect.bottom;
+        if (spaceBelow < 300 && buttonRect.top > 300) {
+            picker.classList.add("upward");
+        } else {
+            picker.classList.add("downward");
+        }
+    }
+
+    // Chat Functions
+    function refreshChat() {
+        fetch("/chat").then((res) => res.json()).then((data) => {
+            const box = document.getElementById("chat-box");
+            box.innerHTML = "";
+
+            data.forEach((msg) => {
+                const messageElement = createMessageElement(msg);
+                box.appendChild(messageElement);
+            });
+
+            box.scrollTop = box.scrollHeight;
+            updateUserList();
+        });
+    }
+
+    function createMessageElement(msg) {
+        const p = document.createElement("div");
+        p.className = "message";
+
+        const timestamp = document.createElement("span");
+        timestamp.className = "timestamp";
+        timestamp.textContent = `[${msg.time}]`;
+
+        const sender = document.createElement("span");
+        sender.className = "sender";
+        sender.textContent = msg.user;
+        sender.onclick = () => handleSenderClick(msg.user);
+
+        const message = document.createElement("span");
+        message.innerHTML = `: ${msg.message}`;
+
+        const status = document.createElement("span");
+        status.className = `message-status ${msg.read ? 'read' : ''}`;
+        status.textContent = msg.read ? "✓✓" : "✓";
+
+        p.appendChild(timestamp);
+        p.appendChild(sender);
+        p.appendChild(message);
+        p.appendChild(status);
+
+        if (msg.reactions) {
+            const reactions = document.createElement("div");
+            reactions.className = "reactions";
+            msg.reactions.forEach(reaction => {
+                const reactionSpan = document.createElement("span");
+                reactionSpan.className = "reaction";
+                reactionSpan.textContent = reaction;
+                reactions.appendChild(reactionSpan);
+            });
+            p.appendChild(reactions);
+        }
+
+        p.oncontextmenu = (e) => showReactionMenu(e, msg.id);
+
+        return p;
+    }
+
+    function handleSenderClick(user) {
+        document.getElementById("chat-to").value = user;
+        openDmWindow(user);
+        startVoiceChat(user);
+    }
+
+    function sendMessage() {
+        const input = document.getElementById("chat-input");
+        const to = document.getElementById("chat-to").value;
+        const msg = input.value.trim();
+
+        if (!msg) return;
+
+        fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `message=${encodeURIComponent(msg)}&to=${encodeURIComponent(to)}`
+        }).then(() => {
+            input.value = "";
+            refreshChat();
+        });
+    }
+
+    // Typing Indicator
+    const chatInput = document.getElementById("chat-input");
+    let typingTimeout;
+
+    chatInput.addEventListener('input', () => {
+        if (chatInput.value.length > 0) {
+            fetch("/typing", {
+                method: "POST",
+                body: `isTyping=true&to=${document.getElementById('chat-to').value}`
+            });
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                fetch("/typing", {
+                    method: "POST",
+                    body: `isTyping=false&to=${document.getElementById('chat-to').value}`
+                });
+            }, 2000);
+        }
+    });
+
+    // DM Functions
+    function openDmWindow(user) {
+        currentDmRecipient = user;
+        document.getElementById('dm-recipient').textContent = `Chat with ${user}`;
+        document.getElementById('dm-window').style.display = 'block';
+        refreshDmMessages();
+    }
+
+    function closeDmWindow() {
+        document.getElementById('dm-window').style.display = 'none';
+        currentDmRecipient = null;
+    }
+
+    function refreshDmMessages() {
+        if (!currentDmRecipient) return;
+
+        fetch("/chat").then((res) => res.json()).then((messages) => {
+            const dmMessages = messages.filter(msg =>
+                (msg.from === myName && msg.to === currentDmRecipient) ||
+                (msg.from === currentDmRecipient && msg.to === myName)
+            );
+
+            const dmBox = document.getElementById('dm-messages');
+            dmBox.innerHTML = dmMessages.map(msg => `
+                <div style="margin-bottom:8px;">
+                    <span style="font-weight:bold; color:${msg.from === myName ? 'var(--primary)' : '#2980b9'}">${msg.from}:</span>
+                    <span> ${msg.message}</span>
+                    <span style="color:#999; font-size:0.8em; margin-left:5px;">${msg.time}</span>
+                </div>
+            `).join("");
+            dmBox.scrollTop = dmBox.scrollHeight;
+        });
+    }
+
+    function sendDmMessage() {
+        const input = document.getElementById('dm-input');
+        const msg = input.value.trim();
+        if (!msg || !currentDmRecipient) return;
+
+        fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `message=${encodeURIComponent(msg)}&to=${encodeURIComponent(currentDmRecipient)}`
+        }).then(() => {
+            input.value = "";
+            refreshDmMessages();
+        });
+    }
+
+    // Voice Chat Functions
+    function startVoiceChat(user) {
+        currentCallPartner = user;
+        document.getElementById('voice-partner').textContent = user;
+        document.getElementById('voice-chat').style.display = 'block';
+    }
+
+    function startCall() {
+        alert(`Calling ${currentCallPartner}... This would initiate WebRTC connection in a real app`);
+        document.getElementById('call-btn').style.display = 'none';
+        document.getElementById('end-call-btn').style.display = 'inline-block';
+    }
+
+    function endCall() {
+        alert(`Ending call with ${currentCallPartner}`);
+        document.getElementById('call-btn').style.display = 'inline-block';
+        document.getElementById('end-call-btn').style.display = 'none';
+    }
+
+    // File Sharing
+    document.getElementById('file-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('to', document.getElementById('chat-to').value);
+
+            fetch("/upload-file", {
+                method: "POST",
+                body: formData
+            }).then(() => {
+                refreshChat();
+            });
+        }
+    });
+
+    // Message Reactions
+    function showReactionMenu(e, messageId) {
+        e.preventDefault();
+
+        const reactionMenu = document.createElement("div");
+        reactionMenu.className = "reaction-menu";
+        reactionMenu.style.left = `${e.clientX}px`;
+        reactionMenu.style.top = `${e.clientY}px`;
+
+        reactionMenu.innerHTML = `
+            <span onclick="addReaction('${messageId}', '👍')">👍</span>
+            <span onclick="addReaction('${messageId}', '❤️')">❤️</span>
+            <span onclick="addReaction('${messageId}', '😂')">😂</span>
+            <span onclick="addReaction('${messageId}', '😮')">😮</span>
+        `;
+
+        document.body.appendChild(reactionMenu);
+
+        setTimeout(() => {
+            document.body.removeChild(reactionMenu);
+        }, 3000);
+    }
+
+    function addReaction(messageId, reaction) {
+        fetch("/add-reaction", {
+            method: "POST",
+            body: `messageId=${messageId}&reaction=${reaction}`
+        }).then(() => refreshChat());
+    }
+
+    // Admin Functions
+    function refreshAdminPanel() {
+        if (!{% if session['is_admin'] %}true{% else %}false{% endif %}) return;
+
+        fetch("/admin/online-users")
+            .then(res => res.json())
+            .then(users => {
+                const panel = document.getElementById("user-list");
+                panel.innerHTML = '';
+
+                for (let ip in users) {
+                    const user = users[ip];
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+                        ${user.name} (${ip})
+                        <button onclick="renameUser('${ip}')">Rename</button>
+                        <button onclick="kickUser('${ip}')">Kick</button>
+                        <button onclick="banUser('${ip}')">Ban</button>
+                        <span class="online-status">● Online</span>
+                    `;
+                    panel.appendChild(li);
+                }
+            });
+    }
+
+    function renameUser(ip) {
+        const newName = prompt("Enter new name:");
+        if (newName) {
+            fetch("/admin/rename", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `ip=${ip}&new_name=${newName}`
+            }).then(refreshAdminPanel);
+        }
+    }
+
+    function kickUser(ip) {
+        if (confirm("Kick this user?")) {
+            fetch("/admin/kick", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `ip=${ip}`
+            }).then(refreshAdminPanel);
+        }
+    }
+
+    function banUser(ip) {
+        if (confirm("Ban this user?")) {
+            fetch("/admin/ban", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `ip=${ip}`
+            }).then(refreshAdminPanel);
+        }
+    }
+
+    // Utility Functions
+    function updateUserList() {
+        fetch("/users").then((res) => res.json()).then((users) => {
+            const select = document.getElementById("chat-to");
+            const currentValue = select.value;
+
+            select.innerHTML = '<option value="All">All (Public)</option>';
+            users.forEach((user) => {
+                if (user !== myName) {
+                    const opt = document.createElement("option");
+                    opt.value = user;
+                    opt.textContent = `DM: ${user}`;
+                    select.appendChild(opt);
+                }
+            });
+
+            // Restore selected value
+            if (currentValue && Array.from(select.options).some(opt => opt.value === currentValue)) {
+                select.value = currentValue;
+            }
+        });
+        }
+        let countdown = 20;
+        const timerElement = document.getElementById('time');
+        const countdownInterval = setInterval(() => {
+            if (countdown > 0) {
+                countdown--;
+                timerElement.textContent = countdown;
+            } else {
+                clearInterval(countdownInterval);
+                document.querySelector('.game-form button').disabled = true;
+                document.querySelector('.game-form button').textContent = '⛔ Time Up';
+            }
+        }, 1000);
+        function kickUserByName(username) {
+            fetch("/users").then(res => res.json()).then(users => {
+                for (let ip in users) {
+                    if (users[ip].name === username) {
+                        fetch("/admin/kick", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                            body: `ip=${ip}`
+                        }).then(() => alert(`${username} was kicked.`));
+                        break;
+                    }
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>

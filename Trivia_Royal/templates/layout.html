@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Game</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+        }
+
+        .navbar {
+            background-color: #1abc9c;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+            .navbar a {
+                color: white;
+                text-decoration: none;
+                font-size: 1.5rem;
+                font-weight: bold;
+            }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+        }
+
+            .hero h1 {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+                color: #f0f0f0;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+        .nav-placeholder {
+            height: 70px;
+        }
+
+        .container {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('register') }}">🎮 Trivia Game</a>
+    </div>
+
+    <div class="hero">
+        <h1>Welcome to Trivia Royale</h1>
+        <p>Challenge your brain, send secret messages, vote to kick out annoying players, and battle for the high score. It's game night, redefined.</p>
+    </div>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
