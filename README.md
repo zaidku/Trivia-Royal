@@ -1,3 +1,15 @@
+![image](https://github.com/user-attachments/assets/3d8a7a53-8864-448b-8a8b-8a81a996ddd7)
+
+
+![image](https://github.com/user-attachments/assets/3905d472-fa59-4455-995b-9a9dc5855081)
+
+
+![image](https://github.com/user-attachments/assets/5b1853a3-c932-490f-b2c8-8c5d2fd38a48)
+
+
+![image](https://github.com/user-attachments/assets/3536e498-a729-47e0-aa86-57575e706075)
+
+
 # 🧠 Trivia Royale 👑
 
 A real-time, web-based multiplayer trivia game built with **Flask** and **JavaScript** — complete with **live chat**, **direct messages**, **admin control**, **voice chat simulation**, and a **royal crown feature** for the trivia champ!
