@@ -28,5 +28,39 @@ Trivia Royale is not your average quiz game. It’s an **office-fun-ready** triv
 1. **Clone this repo:**
 
 ```bash
-git clone https://github.com/your-username/trivia-royale.git
+
+pip install flask
+http://localhost:5000
+
+git clone https://github.com/zaid.kuba/trivia-royale.git
 cd trivia-royale
+
+🔐 Admin Access
+To log in as an admin (for full control):
+
+Username: admin
+
+Password: secret123
+
+Admin and King share similar powers in the game, except Admin never gets dethroned. 😏
+
+👑 Crown Logic
+Answer trivia correctly to earn points.
+
+The player with the highest score becomes King/Queen.
+
+The crowned player gets a golden name and special abilities (like kicking others out of the room).
+
+🎯 Future Plans (Maybe™)
+🧾 Persistent scoreboards
+
+🧠 Custom question sets
+
+🧑‍🎨 Avatar + crown cosmetics
+
+🕹️ Minigames between questions
+
+
+
+Made with 💚 and occasional chaos by Zaid Kuba
+When you are board, 45 Min can make you sweet Game to poke friends with :)
